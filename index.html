@@ -977,6 +977,7 @@
         };        
         function sendResultsByEmail(examResult) {
             const templateParams = {
+                to_name: 'Profesor',              // ← Agregar esto
                 to_email: EMAIL_CONFIG.toEmail,
                 student_name: examResult.studentName,
                 student_dni: examResult.studentDNI,

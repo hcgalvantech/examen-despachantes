@@ -637,7 +637,7 @@
         // Modificar la función submitExam para incluir validación
         function submitExam() {
             if (!validateExam()) {
-                return;
+                return;  // Sale si no pasa la validación
             }
             
             clearInterval(timerInterval);
@@ -675,8 +675,7 @@
             // Guardar localmente como respaldo
             examResults.push(examResult);
             localStorage.setItem('allExamResults', JSON.stringify(examResults));
-        }
-            
+        }            
         function calculateScore() {
             let totalPoints = 0;
             let earnedPoints = 0;
@@ -947,14 +946,6 @@
             return true;
         }
 
-        // Modificar la función submitExam para incluir validación
-        const originalSubmitExam = submitExam;
-        submitExam = function() {
-            if (validateExam()) {
-                originalSubmitExam();
-            }
-        }
-
    
     function formatDetailedResults(detailedResults) {
         let formatted = '';
@@ -973,12 +964,12 @@
         const EMAIL_CONFIG = {
             serviceID: 'service_zal482d',
             templateID: 'template_5059mzm',
-            toEmail: 'hcgalvantech@gmail.com'
+            publicKey: 'teKUO2cmPzDbfLcd2'  // Cambiar de toEmail a publicKey
         };        
         function sendResultsByEmail(examResult) {
             const templateParams = {
                 to_name: 'Profesor',              // ← Agregar esto
-                to_email: EMAIL_CONFIG.toEmail,
+                to_email: 'hcgalvantech@gmail.com',  // Mover aquí el email
                 student_name: examResult.studentName,
                 student_dni: examResult.studentDNI,
                 final_score: examResult.finalScore,

@@ -422,11 +422,7 @@
                 }
             ]
         };
-        const EMAIL_CONFIG = {
-            serviceID: 'service_zal482d',
-            templateID: 'template_5059mzm',
-            toEmail: 'hcgalvantech@gmail.com' // Tu email donde recibirás los resultados
-        };
+
         let currentExam = {};
         let timeLeft = 45 * 60; // 45 minutes in seconds
         let timerInterval;
@@ -525,12 +521,44 @@
                              </div>`;
                     break;
                     
+        
                 case 'fill_multiple':
-                    question.blanks.forEach((blank, i) => {
-                        html += `<div style="margin: 10px 0;">
-                                   ${i + 1}. <input type="text" class="fill-blank" id="q${question.id}_${i}" placeholder="Respuesta ${i + 1}">
-                                 </div>`;
-                    });
+                    if (userAnswer && Array.isArray(userAnswer)) {
+                        let correctBlanks = 0;
+                        
+                        // Para cada respuesta del usuario, verificar si coincide con alguna respuesta correcta
+                        userAnswer.forEach(userResp => {
+                            if (userResp && userResp.trim()) {
+                                const userRespClean = userResp.trim().toLowerCase();
+                                // Verificar si esta respuesta coincide con alguna de las correctas
+                                const matchFound = q.blanks.some(correctResp => 
+                                    correctResp.toLowerCase().includes(userRespClean) || 
+                                    userRespClean.includes(correctResp.toLowerCase())
+                                );
+                                if (matchFound) {
+                                    correctBlanks++;
+                                }
+                            }
+                        });
+                        
+                        // También verificar que no haya respuestas duplicadas contando respuestas únicas
+                        const uniqueCorrectAnswers = new Set();
+                        userAnswer.forEach(userResp => {
+                            if (userResp && userResp.trim()) {
+                                const userRespClean = userResp.trim().toLowerCase();
+                                q.blanks.forEach(correctResp => {
+                                    if (correctResp.toLowerCase().includes(userRespClean) || 
+                                        userRespClean.includes(correctResp.toLowerCase())) {
+                                        uniqueCorrectAnswers.add(correctResp.toLowerCase());
+                                    }
+                                });
+                            }
+                        });
+                        
+                        correctBlanks = Math.min(correctBlanks, uniqueCorrectAnswers.size);
+                        questionPoints = (correctBlanks / q.blanks.length) * q.points;
+                        isCorrect = correctBlanks === q.blanks.length;
+                    }
                     break;
                     
                 case 'open':
@@ -987,11 +1015,6 @@
                 originalSubmitExam();
             }
         }
-     // Configuración de EmailJS - Reemplaza con tus datos reales
-    (function(){
-        emailjs.init("teKUO2cmPzDbfLcd2"); // Obtener de emailjs.com
-    })();
-    
 
     function sendResultsByEmail(examResult) {
         const templateParams = {
@@ -1026,7 +1049,16 @@
             formatted += `Pregunta ${index + 1} ${status}: ${result.pointsEarned.toFixed(2)}/${result.totalPoints} puntos\n`;
         });
         return formatted;
-    }        
+    }
+        // Configuración de EmailJS - Reemplaza con tus datos reales
+        (function(){
+            emailjs.init("teKUO2cmPzDbfLcd2"); // Obtener de emailjs.com
+        })();
+      const EMAIL_CONFIG = {
+        serviceID: 'service_zal482d',
+        templateID: 'template_5059mzm',
+        toEmail: 'hcgalvantech@gmail.com' // Tu email donde recibirás los resultados
+        };      
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </body>

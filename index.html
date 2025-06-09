@@ -523,42 +523,11 @@
                     
         
                 case 'fill_multiple':
-                    if (userAnswer && Array.isArray(userAnswer)) {
-                        let correctBlanks = 0;
-                        
-                        // Para cada respuesta del usuario, verificar si coincide con alguna respuesta correcta
-                        userAnswer.forEach(userResp => {
-                            if (userResp && userResp.trim()) {
-                                const userRespClean = userResp.trim().toLowerCase();
-                                // Verificar si esta respuesta coincide con alguna de las correctas
-                                const matchFound = q.blanks.some(correctResp => 
-                                    correctResp.toLowerCase().includes(userRespClean) || 
-                                    userRespClean.includes(correctResp.toLowerCase())
-                                );
-                                if (matchFound) {
-                                    correctBlanks++;
-                                }
-                            }
-                        });
-                        
-                        // También verificar que no haya respuestas duplicadas contando respuestas únicas
-                        const uniqueCorrectAnswers = new Set();
-                        userAnswer.forEach(userResp => {
-                            if (userResp && userResp.trim()) {
-                                const userRespClean = userResp.trim().toLowerCase();
-                                q.blanks.forEach(correctResp => {
-                                    if (correctResp.toLowerCase().includes(userRespClean) || 
-                                        userRespClean.includes(correctResp.toLowerCase())) {
-                                        uniqueCorrectAnswers.add(correctResp.toLowerCase());
-                                    }
-                                });
-                            }
-                        });
-                        
-                        correctBlanks = Math.min(correctBlanks, uniqueCorrectAnswers.size);
-                        questionPoints = (correctBlanks / q.blanks.length) * q.points;
-                        isCorrect = correctBlanks === q.blanks.length;
-                    }
+                    question.blanks.forEach((blank, i) => {
+                        html += `<div style="margin: 10px 0;">
+                                   ${i + 1}. <input type="text" class="fill-blank" id="q${question.id}_${i}" placeholder="Respuesta ${i + 1}">
+                                 </div>`;
+                    });
                     break;
                     
                 case 'open':

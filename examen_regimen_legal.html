@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen Parcial - Régimen Legal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .student-info {
+            background: #f8f9fa;
+            padding: 25px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .exam-content {
+            padding: 30px;
+        }
+        
+        .question {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .question h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .options {
+            margin-left: 20px;
+        }
+        
+        .option {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option input[type="radio"], .option input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .option label {
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .option label:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .text-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 30px;
+            transition: transform 0.3s ease;
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .results {
+            display: none;
+            padding: 30px;
+            text-align: center;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .score {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .score.approved {
+            color: #27ae60;
+        }
+        
+        .score.failed {
+            color: #e74c3c;
+        }
+        
+        .status {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .status.approved {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.failed {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .vf-question {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .vf-options {
+            display: flex;
+            gap: 20px;
+            margin-left: 20px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Examen Parcial</h1>
+            <p>Régimen Legal para Tecnicatura de Despachantes de Aduana</p>
+        </div>
+        
+        <div class="student-info">
+            <h2 style="margin-bottom: 20px; color: #2c3e50;">Información del Estudiante</h2>
+            <div class="input-group">
+                <label for="studentName">Nombre Completo:</label>
+                <input type="text" id="studentName" placeholder="Ingrese su nombre completo" required>
+            </div>
+            <div class="input-group">
+                <label for="studentDNI">DNI:</label>
+                <input type="text" id="studentDNI" placeholder="Ingrese su DNI (sin puntos)" required>
+            </div>
+        </div>
+        
+        <div class="exam-content">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div id="examQuestions">
+                <!-- Las preguntas se generarán aquí -->
+            </div>
+            
+            <button class="submit-btn" id="submitBtn" onclick="submitExam()">
+                🎯 Enviar Examen
+            </button>
+        </div>
+        
+        <div class="results" id="results">
+            <div class="score" id="finalScore">0/10</div>
+            <div class="status" id="examStatus">Pendiente</div>
+            <div id="details"></div>
+            <button class="download-btn" onclick="downloadResults()">
+                📥 Descargar Resultados (JSON)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const examQuestions = [
+            {
+                id: 1,
+                type: 'multiple',
+                question: 'En base a la ley Aduanera y DNU 70/23, son despachantes de Aduana',
+                options: [
+                    'Las personas humanas o existencia visible realizan en nombre de otros ante el servicio aduanero trámites y diligencias relativos a la importación, la exportación.',
+                    'Las personas jurídicas que realizan en nombre de otros ante el servicio aduanero trámites y diligencias relativos a la importación, la exportación.',
+                    'Todas las opciones son utilizadas como despachantes de aduana.'
+                ],
+                correct: 2,
+                points: 1
+            },
+            {
+                id: 2,
+                type: 'multiple',
+                question: '...las personas de existencia visible que, en las condiciones previstas en este código realizan en nombre de otros ante el servicio aduanero trámites y diligencias relativos a la importación, la exportación y demás operaciones aduaneras.',
+                options: [
+                    'Auxiliares Comerciales y Fiscales',
+                    'ATA y DA',
+                    'Despachantes de Aduana'
+                ],
+                correct: 2,
+                points: 1
+            },
+            {
+                id: 3,
+                type: 'multiple',
+                question: 'Constitución Nacional - "Tesoro nacional formado del producto de los derechos Importación y exportación." Se expresa en el siguiente artículo de la Constitución Nacional',
+                options: [
+                    'Art 4',
+                    'Art 9', 
+                    'Art 12'
+                ],
+                correct: 0,
+                points: 1
+            },
+            {
+                id: 4,
+                type: 'multiple',
+                question: 'MERCOSUR - Sistema de Solución de Controversias se resuelve el 17 de diciembre de 1991 dentro del MERCOSUR.',
+                options: [
+                    'Protocolo de Ouro Preto',
+                    'Protocolo de Brasilia',
+                    'Tratado de Asunción'
+                ],
+                correct: 1,
+                points: 1
+            },
+            {
+                id: 5,
+                type: 'text',
+                question: 'Leyes & Constitución - Indicar cuál es la ley (número) que ampara al comercio internacional en Argentina.',
+                correct: '22415',
+                points: 1
+            },
+            {
+                id: 6,
+                type: 'vf',
+                question: 'El lecho y subsuelo submarinos nacionales no son parte del Territorio Aduanero.',
+                correct: true,
+                points: 0.5
+            },
+            {
+                id: 7,
+                type: 'vf',
+                question: 'Zona marítima aduanera es el mar territorial argentino.',
+                correct: false,
+                points: 0.5
+            },
+            {
+                id: 8,
+                type: 'vf',
+                question: 'El territorio Especial Aduanero o área aduanera especial es aquél en el cual es aplicable un sistema especial arancelario y control de mercaderías.',
+                correct: true,
+                points: 0.5
+            },
+            {
+                id: 9,
+                type: 'vf',
+                question: 'Garantía es todo derecho que se contrae a satisfacción de la aduana, con el objeto de asegurar el pago de los tributos aduaneros, sus intereses, actualizaciones, multas y otras responsabilidades.',
+                correct: true,
+                points: 0.5
+            },
+            {
+                id: 10,
+                type: 'vf',
+                question: 'El MERCOSUR es un bloque social para mejorar el estilo de vida de los ciudadanos.',
+                correct: false,
+                points: 0.5
+            },
+            {
+                id: 11,
+                type: 'vf',
+                question: 'OMC: ORGANIZACIÓN MUNDIAL DE COMERCIO fue creado el 15-4-1994 en acta final de la Ronda de Uruguay.',
+                correct: true,
+                points: 0.5
+            },
+            {
+                id: 12,
+                type: 'vf',
+                question: 'Dentro del Código Aduanero, en la Sección XIII: se ocupa de las Infracciones Aduaneras de cualquier naturaleza.',
+                correct: true,
+                points: 0.5
+            },
+            {
+                id: 13,
+                type: 'vf',
+                question: 'Una ley Federal puede ir en contra de la Constitución y Tratados internacionales porque es un juez nacional quien avala la decisión.',
+                correct: false,
+                points: 0.5
+            },
+            {
+                id: 14,
+                type: 'vf',
+                question: 'En la ley 22.415 en su estructura empieza con "Título Preliminar: Disposiciones Generales. Cap. 1: Ámbito espacial, Importación y exportación, mercaderías, etc."',
+                correct: true,
+                points: 0.5
+            },
+            {
+                id: 15,
+                type: 'vf',
+                question: 'La zona Marítima aduanera rodea la franja del mar territorial argentino y los ríos internacionales sometida a la soberanía de la Nación Argentina, comprendidos sus espacios aéreos, que se encuentra sujeta a disposiciones especiales de control.',
+                correct: true,
+                points: 0.5
+            },
+            {
+                id: 16,
+                type: 'vf',
+                question: 'El régimen de importación/exportación, es aplicable tanto para los no inscriptos como para los inscriptos en el Registro de Exportadores e Importadores.',
+                correct: false,
+                points: 0.5
+            },
+            {
+                id: 17,
+                type: 'vf',
+                question: 'ART. 233 del C.A. (Código Aduanero) -- La destinación de importación para consumo es aquella en virtud de la cual la mercadería importada puede permanecer por tiempo determinado dentro del territorio aduanero.',
+                correct: false,
+                points: 0.5
+            },
+            {
+                id: 18,
+                type: 'checkbox',
+                question: 'Marcar todo aquello que no constituyen territorio Aduanero.',
+                options: [
+                    'Ríos Internacionales',
+                    'Los Exclaves',
+                    'Las Áreas Francas',
+                    'Los Enclaves'
+                ],
+                correct: [1, 2, 3],
+                points: 1
+            },
+            {
+                id: 19,
+                type: 'multiple',
+                question: 'ZPA - En zona primaria aduanera',
+                options: [
+                    'Podrán detener personas y mercadería, incluidos los medios de transporte.',
+                    'Interdictar y secuestrar mercadería, en especial libros, anotaciones, documentos, papeles u otros comprobantes.',
+                    'Todas las opciones pueden ocurrir en zona primaria aduanera.'
+                ],
+                correct: 2,
+                points: 1
+            },
+            {
+                id: 20,
+                type: 'text',
+                question: 'Aduanas Argentinas. ¿Cuántas aduanas existen en Argentina?',
+                correct: '79',
+                points: 0.5
+            },
+            {
+                id: 21,
+                type: 'text',
+                question: 'Aduanas Argentinas. ¿Cuántas aduanas existen en Misiones?',
+                correct: '5',
+                points: 0.5
+            }
+        ];
+
+        let currentAnswers = {};
+        let totalPoints = 0;
+
+        function initializeExam() {
+            totalPoints = examQuestions.reduce((sum, q) => sum + q.points, 0);
+            renderQuestions();
+            updateProgress();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('examQuestions');
+            container.innerHTML = '';
+
+            examQuestions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                
+                let questionHTML = `<h3>Pregunta ${index + 1}: ${question.question}</h3>`;
+                
+                if (question.type === 'multiple') {
+                    questionHTML += '<div class="options">';
+                    question.options.forEach((option, optIndex) => {
+                        questionHTML += `
+                            <div class="option">
+                                <input type="radio" name="q${question.id}" value="${optIndex}" 
+                                    onchange="updateAnswer(${question.id}, ${optIndex})">
+                                <label>${option}</label>
+                            </div>
+                        `;
+                    });
+                    questionHTML += '</div>';
+                } else if (question.type === 'checkbox') {
+                    questionHTML += '<div class="options">';
+                    question.options.forEach((option, optIndex) => {
+                        questionHTML += `
+                            <div class="option">
+                                <input type="checkbox" name="q${question.id}" value="${optIndex}" 
+                                    onchange="updateCheckboxAnswer(${question.id}, ${optIndex})">
+                                <label>${option}</label>
+                            </div>
+                        `;
+                    });
+                    questionHTML += '</div>';
+                } else if (question.type === 'text') {
+                    questionHTML += `
+                        <input type="text" class="text-input" placeholder="Ingrese su respuesta..." 
+                            onchange="updateAnswer(${question.id}, this.value)">
+                    `;
+                } else if (question.type === 'vf') {
+                    questionHTML += `
+                        <div class="vf-question">
+                            <div class="vf-options">
+                                <div class="option">
+                                    <input type="radio" name="q${question.id}" value="true" 
+                                        onchange="updateAnswer(${question.id}, true)">
+                                    <label>Verdadero (V)</label>
+                                </div>
+                                <div class="option">
+                                    <input type="radio" name="q${question.id}" value="false" 
+                                        onchange="updateAnswer(${question.id}, false)">
+                                    <label>Falso (F)</label>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                questionDiv.innerHTML = questionHTML;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function updateAnswer(questionId, value) {
+            currentAnswers[questionId] = value;
+            updateProgress();
+        }
+
+        function updateCheckboxAnswer(questionId, optionIndex) {
+            if (!currentAnswers[questionId]) {
+                currentAnswers[questionId] = [];
+            }
+            
+            const checkbox = event.target;
+            if (checkbox.checked) {
+                if (!currentAnswers[questionId].includes(optionIndex)) {
+                    currentAnswers[questionId].push(optionIndex);
+                }
+            } else {
+                currentAnswers[questionId] = currentAnswers[questionId].filter(idx => idx !== optionIndex);
+            }
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(currentAnswers).length;
+            const total = examQuestions.length;
+            const percentage = (answered / total) * 100;
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+
+        function submitExam() {
+            const name = document.getElementById('studentName').value.trim();
+            const dni = document.getElementById('studentDNI').value.trim();
+            
+            if (!name || !dni) {
+                alert('Por favor, complete su nombre y DNI antes de enviar el examen.');
+                return;
+            }
+            
+            if (Object.keys(currentAnswers).length < examQuestions.length) {
+                if (!confirm('¿Está seguro de enviar el examen? Tiene preguntas sin responder.')) {
+                    return;
+                }
+            }
+            
+            calculateScore();
+        }
+
+        function calculateScore() {
+            let correctAnswers = 0;
+            let earnedPoints = 0;
+            const details = [];
+
+            examQuestions.forEach(question => {
+                const userAnswer = currentAnswers[question.id];
+                let isCorrect = false;
+
+                if (question.type === 'multiple') {
+                    isCorrect = userAnswer === question.correct;
+                } else if (question.type === 'checkbox') {
+                    const userArr = userAnswer || [];
+                    const correctArr = question.correct;
+                    isCorrect = userArr.length === correctArr.length && 
+                               userArr.every(val => correctArr.includes(val));
+                } else if (question.type === 'text') {
+                    const userText = String(userAnswer || '').toLowerCase().trim();
+                    const correctText = String(question.correct).toLowerCase().trim();
+                    isCorrect = userText === correctText;
+                } else if (question.type === 'vf') {
+                    const userBool = userAnswer === 'true' ? true : userAnswer === 'false' ? false : null;
+                    isCorrect = userBool === question.correct;
+                }
+
+                if (isCorrect) {
+                    correctAnswers++;
+                    earnedPoints += question.points;
+                }
+
+                details.push({
+                    questionId: question.id,
+                    question: question.question,
+                    userAnswer: userAnswer,
+                    correctAnswer: question.correct,
+                    isCorrect: isCorrect,
+                    points: isCorrect ? question.points : 0
+                });
+            });
+
+            // Calcular nota sobre 10
+            const finalScore = (earnedPoints / totalPoints) * 10;
+            const passed = finalScore >= 6;
+
+            showResults(finalScore, passed, earnedPoints, totalPoints, details);
+        }
+
+        function showResults(score, passed, earnedPoints, totalPoints, details) {
+            const resultsDiv = document.getElementById('results');
+            const scoreDiv = document.getElementById('finalScore');
+            const statusDiv = document.getElementById('examStatus');
+            const detailsDiv = document.getElementById('details');
+
+            scoreDiv.textContent = score.toFixed(2) + '/10';
+            scoreDiv.className = 'score ' + (passed ? 'approved' : 'failed');
+
+            statusDiv.textContent = passed ? '✅ APROBADO' : '❌ DESAPROBADO - Debe rendir recuperatorio';
+            statusDiv.className = 'status ' + (passed ? 'approved' : 'failed');
+
+            detailsDiv.innerHTML = `
+                <p><strong>Puntaje obtenido:</strong> ${earnedPoints.toFixed(2)}/${totalPoints}</p>
+                <p><strong>Preguntas correctas:</strong> ${details.filter(d => d.isCorrect).length}/${examQuestions.length}</p>
+            `;
+
+            resultsDiv.style.display = 'block';
+            document.getElementById('submitBtn').disabled = true;
+
+            // Guardar resultados para descarga
+            window.examResults = {
+                studentInfo: {
+                    name: document.getElementById('studentName').value,
+                    dni: document.getElementById('studentDNI').value,
+                    examDate: new Date().toISOString()
+                },
+                score: {
+                    finalScore: parseFloat(score.toFixed(2)),
+                    earnedPoints: parseFloat(earnedPoints.toFixed(2)),
+                    totalPoints: totalPoints,
+                    passed: passed,
+                    correctAnswers: details.filter(d => d.isCorrect).length,
+                    totalQuestions: examQuestions.length
+                },
+                answers: details
+            };
+        }
+
+        function downloadResults() {
+            if (!window.examResults) return;
+            
+            const dataStr = JSON.stringify(window.examResults, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `examen_${window.examResults.studentInfo.dni}_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        // Inicializar el examen
+        document.addEventListener('DOMContentLoaded', initializeExam);
+    </script>
+</body>
+</html>

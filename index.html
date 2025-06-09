@@ -708,29 +708,6 @@
             localStorage.setItem('allExamResults', JSON.stringify(examResults));
         }
             
-            // Mostrar mensaje de envío
-            const sendingMsg = document.createElement('div');
-            sendingMsg.innerHTML = '<p style="text-align: center; padding: 20px;">📧 Enviando resultados al profesor...</p>';
-            document.body.appendChild(sendingMsg);
-            
-            // Enviar por email
-            sendResultsByEmail(examResult).then(success => {
-                document.body.removeChild(sendingMsg);
-                
-                if (success) {
-                    alert('✅ Examen enviado correctamente al profesor!');
-                } else {
-                    alert('⚠️ Hubo un problema al enviar el examen. Por favor contacte al profesor.');
-                }
-                
-                showResults(results);
-            });
-            
-            // Guardar localmente como respaldo
-            examResults.push(examResult);
-            localStorage.setItem('allExamResults', JSON.stringify(examResults));
-        }
-
         function calculateScore() {
             let totalPoints = 0;
             let earnedPoints = 0;

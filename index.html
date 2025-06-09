@@ -641,13 +641,34 @@
             currentExam.timeSpent = 45 * 60 - timeLeft;
             
             const results = calculateScore();
-            showResults(results);
             
-            // Guardar resultados para el admin
-            examResults.push({
+            const examResult = {
                 ...currentExam,
-                ...results
+                ...results,
+                examDate: new Date().toISOString()
+            };
+            
+            // Mostrar mensaje de envío
+            const sendingMsg = document.createElement('div');
+            sendingMsg.innerHTML = '<p style="text-align: center; padding: 20px;">📧 Enviando resultados al profesor...</p>';
+            document.body.appendChild(sendingMsg);
+            
+            // Enviar por email
+            sendResultsByEmail(examResult).then(success => {
+                document.body.removeChild(sendingMsg);
+                
+                if (success) {
+                    alert('✅ Examen enviado correctamente al profesor!');
+                } else {
+                    alert('⚠️ Hubo un problema al enviar el examen. Por favor contacte al profesor.');
+                }
+                
+                showResults(results);
             });
+            
+            // Guardar localmente como respaldo
+            examResults.push(examResult);
+            localStorage.setItem('allExamResults', JSON.stringify(examResults));
         }
 
         function calculateScore() {
@@ -701,15 +722,41 @@
                         }
                         break;
                         
+                    // Modificar solo la parte de 'fill_multiple' en calculateScore
                     case 'fill_multiple':
                         if (userAnswer && Array.isArray(userAnswer)) {
                             let correctBlanks = 0;
-                            q.blanks.forEach((correct, i) => {
-                                if (userAnswer[i] && 
-                                    userAnswer[i].toLowerCase().includes(correct.toLowerCase())) {
-                                    correctBlanks++;
+                            
+                            // Para cada respuesta del usuario, verificar si coincide con alguna respuesta correcta
+                            userAnswer.forEach(userResp => {
+                                if (userResp && userResp.trim()) {
+                                    const userRespClean = userResp.trim().toLowerCase();
+                                    // Verificar si esta respuesta coincide con alguna de las correctas
+                                    const matchFound = q.blanks.some(correctResp => 
+                                        correctResp.toLowerCase().includes(userRespClean) || 
+                                        userRespClean.includes(correctResp.toLowerCase())
+                                    );
+                                    if (matchFound) {
+                                        correctBlanks++;
+                                    }
                                 }
                             });
+                            
+                            // También verificar que no haya respuestas duplicadas contando respuestas únicas
+                            const uniqueCorrectAnswers = new Set();
+                            userAnswer.forEach(userResp => {
+                                if (userResp && userResp.trim()) {
+                                    const userRespClean = userResp.trim().toLowerCase();
+                                    q.blanks.forEach(correctResp => {
+                                        if (correctResp.toLowerCase().includes(userRespClean) || 
+                                            userRespClean.includes(correctResp.toLowerCase())) {
+                                            uniqueCorrectAnswers.add(correctResp.toLowerCase());
+                                        }
+                                    });
+                                }
+                            });
+                            
+                            correctBlanks = Math.min(correctBlanks, uniqueCorrectAnswers.size);
                             questionPoints = (correctBlanks / q.blanks.length) * q.points;
                             isCorrect = correctBlanks === q.blanks.length;
                         }
@@ -862,10 +909,35 @@
         });
 
         // Función adicional para validar todas las respuestas antes de enviar
+        
+        // Modificar la función validateExam
         function validateExam() {
             const unanswered = [];
             examData.questions.forEach((q, index) => {
-                if (!currentExam.answers[q.id]) {
+                const answer = currentExam.answers[q.id];
+                let isAnswered = false;
+                
+                switch (q.type) {
+                    case 'multiple':
+                    case 'true_false':
+                        isAnswered = answer !== undefined && answer !== null;
+                        break;
+                    case 'multiple_select':
+                        isAnswered = answer && Array.isArray(answer) && answer.length > 0;
+                        break;
+                    case 'true_false_multiple':
+                        isAnswered = answer && Object.keys(answer).length > 0;
+                        break;
+                    case 'fill_blank':
+                    case 'open':
+                        isAnswered = answer && answer.trim().length > 0;
+                        break;
+                    case 'fill_multiple':
+                        isAnswered = answer && Array.isArray(answer) && answer.some(a => a && a.trim().length > 0);
+                        break;
+                }
+                
+                if (!isAnswered) {
                     unanswered.push(index + 1);
                 }
             });
@@ -882,7 +954,52 @@
             if (validateExam()) {
                 originalSubmitExam();
             }
+        }
+     // Configuración de EmailJS - Reemplaza con tus datos reales
+    (function(){
+        emailjs.init("teKUO2cmPzDbfLcd2"); // Obtener de emailjs.com
+    })();
+    
+    const EMAIL_CONFIG = {
+        serviceID: 'service_zal482d',
+        templateID: 'template_5059mzm',
+        toEmail: 'hcgalvantech@gmail.com' // Tu email donde recibirás los resultados
+    };
+    function sendResultsByEmail(examResult) {
+        const templateParams = {
+            to_email: EMAIL_CONFIG.toEmail,
+            student_name: examResult.studentName,
+            student_dni: examResult.studentDNI,
+            final_score: examResult.finalScore,
+            total_points: examResult.earnedPoints.toFixed(2),
+            max_points: examResult.totalPoints,
+            passed_status: examResult.passed ? 'APROBADO ✅' : 'DESAPROBADO ❌ (Recuperatorio)',
+            exam_date: new Date(examResult.examDate).toLocaleString(),
+            time_spent: `${Math.floor(examResult.timeSpent / 60)}:${(examResult.timeSpent % 60).toString().padStart(2, '0')}`,
+            detailed_results: formatDetailedResults(examResult.detailedResults),
+            total_questions: examResult.totalQuestions
         };
+    
+        return emailjs.send(EMAIL_CONFIG.serviceID, EMAIL_CONFIG.templateID, templateParams)
+            .then(function(response) {
+                console.log('Email enviado correctamente!', response.status, response.text);
+                return true;
+            })
+            .catch(function(error) {
+                console.error('Error al enviar email:', error);
+                return false;
+            });
+    }
+    
+    function formatDetailedResults(detailedResults) {
+        let formatted = '';
+        detailedResults.forEach((result, index) => {
+            const status = result.isCorrect ? '✅' : '❌';
+            formatted += `Pregunta ${index + 1} ${status}: ${result.pointsEarned.toFixed(2)}/${result.totalPoints} puntos\n`;
+        });
+        return formatted;
+    }        
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </body>
 </html>    

@@ -422,7 +422,11 @@
                 }
             ]
         };
-
+        const EMAIL_CONFIG = {
+            serviceID: 'service_zal482d',
+            templateID: 'template_5059mzm',
+            toEmail: 'hcgalvantech@gmail.com' // Tu email donde recibirás los resultados
+        };
         let currentExam = {};
         let timeLeft = 45 * 60; // 45 minutes in seconds
         let timerInterval;
@@ -633,7 +637,12 @@
             });
         }
 
+        // Modificar la función submitExam para incluir validación
         function submitExam() {
+            if (!validateExam()) {
+                return;
+            }
+            
             clearInterval(timerInterval);
             collectAnswers();
             
@@ -647,6 +656,29 @@
                 ...results,
                 examDate: new Date().toISOString()
             };
+            
+            // Mostrar mensaje de envío
+            const sendingMsg = document.createElement('div');
+            sendingMsg.innerHTML = '<p style="text-align: center; padding: 20px;">📧 Enviando resultados al profesor...</p>';
+            document.body.appendChild(sendingMsg);
+            
+            // Enviar por email
+            sendResultsByEmail(examResult).then(success => {
+                document.body.removeChild(sendingMsg);
+                
+                if (success) {
+                    alert('✅ Examen enviado correctamente al profesor!');
+                } else {
+                    alert('⚠️ Hubo un problema al enviar el examen. Por favor contacte al profesor.');
+                }
+                
+                showResults(results);
+            });
+            
+            // Guardar localmente como respaldo
+            examResults.push(examResult);
+            localStorage.setItem('allExamResults', JSON.stringify(examResults));
+        }
             
             // Mostrar mensaje de envío
             const sendingMsg = document.createElement('div');
@@ -960,11 +992,7 @@
         emailjs.init("teKUO2cmPzDbfLcd2"); // Obtener de emailjs.com
     })();
     
-    const EMAIL_CONFIG = {
-        serviceID: 'service_zal482d',
-        templateID: 'template_5059mzm',
-        toEmail: 'hcgalvantech@gmail.com' // Tu email donde recibirás los resultados
-    };
+
     function sendResultsByEmail(examResult) {
         const templateParams = {
             to_email: EMAIL_CONFIG.toEmail,

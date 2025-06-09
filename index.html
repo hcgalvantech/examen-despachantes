@@ -968,8 +968,8 @@
         };        
         function sendResultsByEmail(examResult) {
             const templateParams = {
-                to_name: 'Profesor',              // ← Agregar esto
-                to_email: 'hcgalvantech@gmail.com',  // Mover aquí el email
+                to_email: 'hcgalvantech@gmail.com',  // Cambiar a 'reply_to'
+                from_name: examResult.studentName,   // Agregar nombre del remitente
                 student_name: examResult.studentName,
                 student_dni: examResult.studentDNI,
                 final_score: examResult.finalScore,

@@ -782,16 +782,12 @@
                         }
                         break;
                         
-                    // Modificar solo la parte de 'fill_multiple' en calculateScore
                     case 'fill_multiple':
                         if (userAnswer && Array.isArray(userAnswer)) {
                             let correctBlanks = 0;
-                            
-                            // Para cada respuesta del usuario, verificar si coincide con alguna respuesta correcta
                             userAnswer.forEach(userResp => {
                                 if (userResp && userResp.trim()) {
                                     const userRespClean = userResp.trim().toLowerCase();
-                                    // Verificar si esta respuesta coincide con alguna de las correctas
                                     const matchFound = q.blanks.some(correctResp => 
                                         correctResp.toLowerCase().includes(userRespClean) || 
                                         userRespClean.includes(correctResp.toLowerCase())
@@ -802,7 +798,6 @@
                                 }
                             });
                             
-                            // También verificar que no haya respuestas duplicadas contando respuestas únicas
                             const uniqueCorrectAnswers = new Set();
                             userAnswer.forEach(userResp => {
                                 if (userResp && userResp.trim()) {
@@ -823,9 +818,8 @@
                         break;
                         
                     case 'open':
-                        // Para preguntas abiertas, damos puntos parciales si hay respuesta
                         if (userAnswer && userAnswer.length > 20) {
-                            questionPoints = q.points * 0.8; // 80% de los puntos por responder
+                            questionPoints = q.points * 0.8;
                             isCorrect = true;
                         }
                         break;
@@ -842,7 +836,6 @@
                 });
             });
             
-            // Calcular nota sobre 10
             const finalScore = (earnedPoints / totalPoints) * 10;
             const passed = finalScore >= 6;
             
@@ -1016,32 +1009,7 @@
             }
         }
 
-    function sendResultsByEmail(examResult) {
-        const templateParams = {
-            to_email: EMAIL_CONFIG.toEmail,
-            student_name: examResult.studentName,
-            student_dni: examResult.studentDNI,
-            final_score: examResult.finalScore,
-            total_points: examResult.earnedPoints.toFixed(2),
-            max_points: examResult.totalPoints,
-            passed_status: examResult.passed ? 'APROBADO ✅' : 'DESAPROBADO ❌ (Recuperatorio)',
-            exam_date: new Date(examResult.examDate).toLocaleString(),
-            time_spent: `${Math.floor(examResult.timeSpent / 60)}:${(examResult.timeSpent % 60).toString().padStart(2, '0')}`,
-            detailed_results: formatDetailedResults(examResult.detailedResults),
-            total_questions: examResult.totalQuestions
-        };
-    
-        return emailjs.send(EMAIL_CONFIG.serviceID, EMAIL_CONFIG.templateID, templateParams)
-            .then(function(response) {
-                console.log('Email enviado correctamente!', response.status, response.text);
-                return true;
-            })
-            .catch(function(error) {
-                console.error('Error al enviar email:', error);
-                return false;
-            });
-    }
-    
+   
     function formatDetailedResults(detailedResults) {
         let formatted = '';
         detailedResults.forEach((result, index) => {
@@ -1051,14 +1019,50 @@
         return formatted;
     }
         // Configuración de EmailJS - Reemplaza con tus datos reales
+        const EMAIL_CONFIG = {
+            serviceID: 'service_zal482d',
+            templateID: 'template_5059mzm',
+            toEmail: 'hcgalvantech@gmail.com'
+        };
+        
         (function(){
-            emailjs.init("teKUO2cmPzDbfLcd2"); // Obtener de emailjs.com
+            emailjs.init("teKUO2cmPzDbfLcd2");
         })();
-      const EMAIL_CONFIG = {
-        serviceID: 'service_zal482d',
-        templateID: 'template_5059mzm',
-        toEmail: 'hcgalvantech@gmail.com' // Tu email donde recibirás los resultados
-        };      
+        
+        function sendResultsByEmail(examResult) {
+            const templateParams = {
+                to_email: EMAIL_CONFIG.toEmail,
+                student_name: examResult.studentName,
+                student_dni: examResult.studentDNI,
+                final_score: examResult.finalScore,
+                total_points: examResult.earnedPoints.toFixed(2),
+                max_points: examResult.totalPoints,
+                passed_status: examResult.passed ? 'APROBADO ✅' : 'DESAPROBADO ❌ (Recuperatorio)',
+                exam_date: new Date(examResult.examDate).toLocaleString(),
+                time_spent: `${Math.floor(examResult.timeSpent / 60)}:${(examResult.timeSpent % 60).toString().padStart(2, '0')}`,
+                detailed_results: formatDetailedResults(examResult.detailedResults),
+                total_questions: examResult.totalQuestions
+            };
+        
+            return emailjs.send(EMAIL_CONFIG.serviceID, EMAIL_CONFIG.templateID, templateParams)
+                .then(function(response) {
+                    console.log('Email enviado correctamente!', response.status, response.text);
+                    return true;
+                })
+                .catch(function(error) {
+                    console.error('Error al enviar email:', error);
+                    return false;
+                });
+        }
+        
+        function formatDetailedResults(detailedResults) {
+            let formatted = '';
+            detailedResults.forEach((result, index) => {
+                const status = result.isCorrect ? '✅' : '❌';
+                formatted += `Pregunta ${index + 1} ${status}: ${result.pointsEarned.toFixed(2)}/${result.totalPoints} puntos\n`;
+            });
+            return formatted;
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </body>

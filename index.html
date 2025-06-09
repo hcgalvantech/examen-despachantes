@@ -996,16 +996,16 @@
         return formatted;
     }
         // Configuración de EmailJS - Reemplaza con tus datos reales
-        const EMAIL_CONFIG = {
-            serviceID: 'service_zal482d',
-            templateID: 'template_5059mzm',
-            toEmail: 'hcgalvantech@gmail.com'
-        };
-        
+       
         (function(){
             emailjs.init("teKUO2cmPzDbfLcd2");
         })();
         
+        const EMAIL_CONFIG = {
+            serviceID: 'service_zal482d',
+            templateID: 'template_5059mzm',
+            toEmail: 'hcgalvantech@gmail.com'
+        };        
         function sendResultsByEmail(examResult) {
             const templateParams = {
                 to_email: EMAIL_CONFIG.toEmail,
